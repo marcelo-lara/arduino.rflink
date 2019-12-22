@@ -20,3 +20,8 @@
 #define RFCMD_EVENT    0xD
 #define RFCMD_STATUS   0xE
 
+// RF nodes /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#define server_node			  0x0
+#define office_node			  0x1
+#define suite_node		    0x2
+#define living_node       0x3
