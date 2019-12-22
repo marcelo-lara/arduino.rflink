@@ -1,0 +1,20 @@
+{
+  "name": "RFlink",
+  "keywords": "rf, radio, wireless, spi",
+  "description": "NRF24L01(+) protocol to connect devices",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/marcelo-lara/arduino.rflink.git"
+  },
+  "version": "1.0.0",
+  "frameworks": "arduino",
+  "platforms": [
+    "atmelavr",
+    "atmelsam",
+    "teensy",
+    "espressif32",
+    "espressif8266",
+    "linux_arm"
+  ]
+}
