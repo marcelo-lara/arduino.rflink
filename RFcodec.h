@@ -3,12 +3,24 @@
 //RF packet
 struct Packet {
 public:
+  Packet(){};
+  Packet(u8 id, u8 rfCommand, u32 payload, int node){
+    this->id=id;
+    this->cmd=rfCommand;
+    this->payload=payload;
+    this->node=node;
+  };
+
 	u8	 id;      //channel id
 	u8	 cmd;     //rfcmd enum
 	u32  payload; //32b payload
 
 	byte node;    //rf station id
 	u32  raw;     //encoded packet
+
+  void toString(){
+    Serial.printf("[id:%i|payload:%l]", this->id, this->payload);
+  };
 };
 
 class RFcodec{
