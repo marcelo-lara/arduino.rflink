@@ -19,7 +19,7 @@ public:
 	u32  raw;     //encoded packet
 
   void toString(){
-    Serial.printf("[id:%i|payload:%l]", this->id, this->payload);
+    Serial.printf("[id:%i|payload:%lu]", this->id, (unsigned long)(this->payload));
   };
 };
 
