@@ -15,6 +15,7 @@ public:
     
     //tx commands
     bool send(Packet dev);
+    RFcodec* codec;
 
 private:
     unsigned long deviceEncode(Packet pkt);

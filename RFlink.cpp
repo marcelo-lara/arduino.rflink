@@ -1,9 +1,8 @@
 #include "RFlink.h"
-#include "Arduino.h"
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
-RFcodec* codec;
+
 
 #define rf_ce   2 //D4
 #define rf_csn 15 //D8
