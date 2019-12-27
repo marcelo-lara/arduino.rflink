@@ -35,6 +35,8 @@ class RFcodec{
         
         unsigned long pressureEncode(float devicePayload);
         float pressureDecode(unsigned long devicePayload);
+        unsigned long floatEncode(float devicePayload);
+        float floatDecode(unsigned long devicePayload);
         
     private:
 };

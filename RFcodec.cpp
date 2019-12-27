@@ -48,7 +48,22 @@ unsigned long RFcodec::pressureEncode(float devicePayload){
 }
 
 float RFcodec::pressureDecode(unsigned long devicePayload){
-  return (devicePayload/100)+900; //900hPa offset
+  return ((float)devicePayload/(float)100)+900; //900hPa offset
+}
+
+//////////////////////////////////////////////////////
+// Float patch
+
+//encode float (temperature/humidity)
+unsigned long RFcodec::floatEncode(float devicePayload){
+	unsigned long ret = devicePayload*100;
+  if(ret>0xFFFF) ret=0xFFFF;
+	return ret;
+}
+
+//encode float (temperature/humidity)
+float RFcodec::floatDecode(unsigned long devicePayload){
+  return ((float)devicePayload/(float)100);
 }
 
 
