@@ -10,14 +10,11 @@ class RFlink{
 public:
     RFlink(RFrxCallback rxEvent);
     void setup();
-    void update(); //decode received packets into tasks + raise RF
+    void update(); 
     bool ready;
     
     //tx commands
     bool send(Packet dev);
-
-    //rx section
-
 
 private:
     unsigned long deviceEncode(Packet pkt);

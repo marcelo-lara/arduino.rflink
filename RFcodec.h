@@ -11,12 +11,12 @@ public:
     this->node=node;
   };
 
-	u8	 id;      //channel id
-	u8	 cmd;     //rfcmd enum
-	u32  payload; //32b payload
+	u8	 id      = 0; //channel id
+	u8	 cmd     = 0; //rfcmd enum
+	u32  payload = 0; //32b payload
 
-	byte node;    //rf station id
-	u32  raw;     //encoded packet
+	byte node    = 0; //rf station id
+	u32  raw     = 0; //encoded packet
 
   void toString(){
     Serial.printf("[PKT|id:%i|payload:%lu]", this->id, (unsigned long)(this->payload));

@@ -13,6 +13,7 @@ RFlink::RFlink(RFrxCallback rxEvent){
     raiseRxEvent = rxEvent;
 }
 
+//setup nRF24L01 
 void RFlink::setup(){
     ready=false;
     radio.begin();
@@ -35,6 +36,7 @@ void RFlink::setup(){
     Serial.println(ready?"rf online":"rf offline");
 }
 
+//handle received packets -> raise RF
 void RFlink::update(){
 
 	//if radio is not enabled, discard anything
