@@ -8,8 +8,9 @@
 #define rf_csn 15 //D8
 RF24 radio(rf_ce,rf_csn);
 
-RFlink::RFlink(RFrxCallback rxEvent){
+RFlink::RFlink(RFrxCallback rxEvent, RFfailCallback failEvent){
     raiseRxEvent = rxEvent;
+    raiseFailCallback = failEvent;
 }
 
 //setup nRF24L01 
@@ -41,9 +42,10 @@ void RFlink::update(){
 	//if radio is not enabled, discard anything
 	if (!ready) return;
 
-  //receive buffer
+  //check receive buffer, otherwise, proceed to deliver
 	uint8_t _radioNode;
-	if (!radio.available(&_radioNode)) return;
+	if (!radio.available(&_radioNode))
+    return this->deliver();
 
 	//get payload
 	unsigned long _radioPayLoad;
@@ -56,40 +58,57 @@ void RFlink::update(){
 
 	//decode payload
 	Packet dev = codec->decode(_radioPayLoad, _radioNode);
-  Serial.print("RF<-\t");
-  Serial.print(_radioNode, HEX);
-  Serial.print("|");
-  Serial.println(_radioPayLoad, HEX);
+  Serial.printf("RF<-%X|%X\n", _radioNode, _radioPayLoad);
 
   //delegate
   raiseRxEvent(dev);
 }
 
 bool RFlink::send(Packet dev){
-  Serial.print("RF->\t");
+  sendQueue.enqueue(RfPacket(dev, deviceEncode(dev)));
+  return true;
+}
+
+void RFlink::deliver(){
+	//if radio is not enabled, discard anything<
+	if (!ready) return;
+  if(sendQueue.isEmpty()) return;
+
+  //get next packet to deliver
+  RfPacket rfPacket = sendQueue.dequeue();
+  if(rfPacket.sendTs>millis())
+    return sendQueue.enqueue(rfPacket);
 
 	//open write pipe
 	uint64_t writeAddress;
-  switch (dev.node) {
+  switch (rfPacket.packet.node) {
 		case office_node: writeAddress = rf_office_rx; break;
 		case suite_node: writeAddress = rf_suite_rx; break;
 		case living_node: writeAddress = rf_living_rx; break;
   };
-  u32 msg = deviceEncode(dev);
-
-  Serial.print(dev.node, HEX);
-  Serial.print("|");
-  Serial.print(msg, HEX);
-  Serial.print("\t");
+  
 
   //rf send
   radio.stopListening();
   radio.openWritingPipe(writeAddress);
-  bool result = 0;
-  result = radio.write(&msg, sizeof(unsigned long), 0);
+  bool result = radio.write(&rfPacket.txPacket, sizeof(unsigned long), 0);
   radio.startListening();
-  Serial.println(result?"ok":"error");
-}
+  Serial.printf("RF->%i|%X\t%s\n", rfPacket.packet.node, rfPacket.txPacket, result?"ok":"error");
+
+  //retry handling
+  if(!result){
+    rfPacket.sendTs = millis() + 500;
+    Serial.print("\t\tretry ");
+    rfPacket.retry++;
+    if(rfPacket.retry<3){
+      Serial.println(rfPacket.retry);
+      sendQueue.enqueue(rfPacket);}
+    else{
+      Serial.println("drop");
+      raiseFailCallback(rfPacket.packet);
+    }
+  }
+};
 
 unsigned long RFlink::deviceEncode(Packet pkt){
 	unsigned long retVal = 0xD;
